@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>청소년 카페인 케어</title>
+  <title>caffein note</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
@@ -39,19 +39,26 @@
       align-items: center;
       gap: 8px;
     }
-    .logo-circle {
-      width: 40px;
-      height: 40px;
-      border-radius: 999px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #22c55e;
-      color: #f0fdf4;
-      font-weight: 700;
-      font-size: 1.2rem;
-      box-shadow: 0 10px 20px rgba(22,163,74,0.35);
-    }
+/* 동그라미 로고: 컵 아이콘 + 연한 주황색 배경 */
+.logo-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #faf6f1;              /* 연한 주황색 */
+  box-shadow: 0 10px 20px rgba(22,163,74,0.35);
+  overflow: hidden;                 /* 동그라미 밖 잘라내기 */
+}
+
+/* 컵 이미지 자체 스타일 */
+.logo-circle img {
+  width: 28px;                      /* 동그라미보다 조금 작게 */
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
     header h1 {
       margin: 0;
       font-size: 1.35rem;
@@ -574,15 +581,18 @@
 </head>
 <body>
 <div class="app">
-  <header>
-    <div class="logo-row">
-      <div class="logo-circle">C</div>
-      <div>
-        <h1>청소년 카페인 케어</h1>
-        <p>홈(컵) · 섭취 기록 · 추가 기능(통합+세부 화면)을 분리해서 사용해요.</p>
-      </div>
+<header>
+  <div class="logo-row">
+    <div class="logo-circle">
+      <!-- 컵 아이콘 이미지 (파일명은 실제 저장한 이름으로 맞추기) -->
+      <img src="카페인 컵 이미지.png" alt="caffein note 로고">
     </div>
-  </header>
+    <div>
+      <h1>caffein note</h1>
+      <p>홈(컵) · 섭취 기록 · 추가 기능(통합+세부 화면)을 분리해서 사용해요.</p>
+    </div>
+  </div>
+</header>
 
   <!-- ===== 1. 홈 화면 ===== -->
   <div id="view-home">
@@ -1128,8 +1138,7 @@
 
     // 1월 1일 ~ 11월 18일(고정)
     const startDate = new Date(year, 0, 1);   // 0 = 1월
-    const endDate   = new Date(year, 10, 18); // 10 = 11월
-
+    const endDate   = new Date(year, 10, 27); // 11월 27일까지 데모 데이터 생성
     const dayMs = 24 * 60 * 60 * 1000;
     const demoIntakes = [];
     let intakeId = 1;
@@ -1161,15 +1170,15 @@
         d.getMonth() === endDate.getMonth() &&
         d.getDate() === endDate.getDate();
 
-      // 🔹 11월 18일: 공복 아침 커피 쿠키만 섭취 (상대적으로 적은 섭취)
+      // 🔹 11월 27일: 오전 10시 커피과자 40mg 섭취 (데모용)
       if (isTargetDay) {
         demoIntakes.push({
           id: intakeId++,
-          productName: '커피 쿠키',
-          amountNote: '2개',
-          caffeineMg: 40, // 20mg × 2개 가정
-          takenAt: makeIso(d, 8, 30),
-          mealTiming: 'EMPTY', // 공복
+          productName: '커피과자',
+          amountNote: '1개',
+          caffeineMg: 40,           // 40mg
+          takenAt: makeIso(d, 10, 0), // 오전 10:00
+          mealTiming: 'SNACK',      // 혹은 '' 로 둬도 됨
           category: 'food'
         });
         continue;
@@ -1280,33 +1289,7 @@
     // → EFFECT_WEIGHTS의 대부분 항목이 한 번씩 등장하므로
     //    computeUserEffectScore() 기준으로 고위험(상위 20%) 구간으로 계산됨.
 
-    // 자주 마시는 상품 아이콘(데모용)
-    const demoShortcuts = [
-      {
-        id: 'demo_morning_americano',
-        icon: '☕',
-        label: '등교 전 아메리카노',
-        caffeineMg: 150,
-        volume: '355ml',
-        defaultAmountNote: '1잔'
-      },
-      {
-        id: 'demo_exam_energy',
-        icon: '⚡',
-        label: '시험기간 에너지 드링크',
-        caffeineMg: 140,
-        volume: '355ml',
-        defaultAmountNote: '1캔'
-      },
-      {
-        id: 'demo_coffee_cookie',
-        icon: '🍪',
-        label: '커피 쿠키',
-        caffeineMg: 20,
-        volume: '1개',
-        defaultAmountNote: '2개'
-      }
-    ];
+  const demoShortcuts = []; 
 
     // 체중 예시 (권장 섭취량 계산용)
     const demoProfile = {
@@ -3809,6 +3792,7 @@ function init() {
   }
 
   loadData();
+
 
   const intakeTime = document.getElementById('intake-time');
   if (intakeTime) intakeTime.value = formatDateTimeLocal(new Date());
